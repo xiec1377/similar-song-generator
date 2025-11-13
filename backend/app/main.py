@@ -5,7 +5,7 @@ from app.db.database import Base, engine
 
 app = FastAPI()
 
-# Base.metadata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)  # don't use when using alembic migrations
 app.include_router(song.router)
 
 

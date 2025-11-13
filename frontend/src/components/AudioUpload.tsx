@@ -31,9 +31,9 @@ export default function AudioUpload() {
         }
       );
       const result = await response.json();
-      console.log("✅ Uploaded:", result);
+      console.log("Uploaded:", result);
     } catch (error) {
-      console.error("❌ Upload failed:", error);
+      console.error("Upload failed:", error);
     }
   };
 

@@ -17,7 +17,7 @@ class Song(Base):
         index=True,
     )
 
-    name = Column(String, nullable=False)
+    title = Column(String, nullable=False)
     file_data = Column(LargeBinary, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
