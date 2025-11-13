@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FaPlay, FaPause } from "react-icons/fa";
+import { useSong } from "../context/SongContext";
 
 export default function SongList() {
   const [songs, setSongs] = useState([]);
-  const [selectedSongId, setSelectedSongId] = useState(null);
   const [currentSongId, setCurrentSongId] = useState(null);
   const audioRefs = useRef({});
+  const { setSelectedSong } = useSong();
 
   useEffect(() => {
     const fetchSongs = async () => {
@@ -69,6 +70,10 @@ export default function SongList() {
             <div
               key={song.id}
               className="flex items-center justify-between pt-2 pb-2 px-2"
+              onClick={() => {
+                setSelectedSong(song);
+                console.log("selecting song...", song.title);
+              }}
             >
               <div className="flex items-center gap-2">
                 <button

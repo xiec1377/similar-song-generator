@@ -1,13 +1,18 @@
 import "./App.css";
 import AudioUpload from "./components/AudioUpload";
 import SongList from "./components/SongList";
+import SongView from "./components/SongView";
+import { SongProvider } from "./context/SongContext";
 
 function App() {
   return (
-    <div className="flex flex-col">
-      <AudioUpload />
-      <SongList />
-    </div>
+    <SongProvider>
+      <div className="flex flex-col">
+        <SongView />
+        <AudioUpload />
+        <SongList />
+      </div>
+    </SongProvider>
   );
 }
 

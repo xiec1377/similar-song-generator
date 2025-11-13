@@ -42,3 +42,24 @@
 .read-the-docs {
   color: #888;
 }
+
+:root {
+  --animate-spin: spin 1s linear infinite;
+}
+
+/* Keyframes for spinning */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Optional class for slow spin */
+.animate-spin-slow {
+  animation: spin 5s linear infinite;
+}
+
+/* Class that uses the CSS variable */
+.animate-spin {
+  animation: var(--animate-spin);
+}
