@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useRef } from "react";
 import RecordSpinner from "./RecordSpinner";
 import { useSong } from "../context/SongContext";
+import SongStatsChart from "./SongStatsChart";
 
 export default function SongView() {
   const { selectedSong } = useSong();
+  const [songFeatures, setSongFeatures] = useState(null);
 
   useEffect(() => {
     if (!selectedSong?.file_data) return;
-
     const fetchFeatures = async () => {
       console.log("fetching audio features...");
-
       try {
         // vonvert base64 to blob
         const byteCharacters = atob(selectedSong.file_data);
@@ -33,18 +33,19 @@ export default function SongView() {
         );
         const result = await response.json();
         console.log("got song features:", result);
+        setSongFeatures(result);
         // setSongs(result) or update state
       } catch (error) {
         console.error("Fetch song features failed:", error);
       }
     };
-
     fetchFeatures();
   }, [selectedSong]);
   return (
     <div className="flex flex-col">
       <RecordSpinner />
       {selectedSong && <div>{selectedSong.title}</div>}
+      {songFeatures && <SongStatsChart features={songFeatures} />}
     </div>
   );
 }
