@@ -43,6 +43,22 @@ export default function SongList() {
     setCurrentSongId(id);
     currentAudio.onended = () => setCurrentSongId(null);
   };
+
+  const handleDelete = async (songId: string) => {
+    console.log("deleting song...", songId);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/song/${songId}`, {
+        method: "DELETE",
+      });
+      const result = await response.json();
+      console.log("deleted song:", result);
+      setSongs((prevSongs) => prevSongs.filter((s) => s.id !== songId));
+      // setSongs(result);
+    } catch (error) {
+      console.error("Delete song failed:", error);
+    }
+  };
+
   return (
     <div className="flex flex-col">
       <h1 className="m-4">Songs</h1>
@@ -50,25 +66,36 @@ export default function SongList() {
         songs.map((song) => {
           // const audioSrc = `data:audio/mpeg;base64,${song.file_data}`;
           return (
-            <div key={song.id} className="flex flex-row items-center pt-2 pb-2 gap-2">
-              <button
-                onClick={() => togglePlay(song.id)}
-                className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+            <div
+              key={song.id}
+              className="flex items-center justify-between pt-2 pb-2 px-2"
+            >
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => togglePlay(song.id)}
+                  className="p-2 bg-gray-100 rounded-full hover:bg-gray-200"
+                >
+                  {currentSongId === song.id ? (
+                    <FaPause className="text-gray-700" />
+                  ) : (
+                    <FaPlay className="text-gray-700" />
+                  )}
+                </button>
+
+                <audio
+                  ref={(el) => (audioRefs.current[song.id] = el)}
+                  src={`data:audio/mp3;base64,${song.file_data}`}
+                  type="audio/mpeg"
+                />
+
+                <p className="text-sm font-medium">{song.title}</p>
+              </div>
+              <p
+                className="text-sm font-medium cursor-pointer text-red-500 hover:text-red-700"
+                onClick={() => handleDelete(song.id)}
               >
-                {currentSongId === song.id ? (
-                  <FaPause className="text-gray-700" />
-                ) : (
-                  <FaPlay className="text-gray-700" />
-                )}
-              </button>
-
-              <audio
-                ref={(el) => (audioRefs.current[song.id] = el)}
-                src={`data:audio/mp3;base64,${song.file_data}`}
-                type="audio/mpeg"
-              />
-
-              <p className="text-sm font-medium">{song.title}</p>
+                delete
+              </p>
             </div>
           );
         })}

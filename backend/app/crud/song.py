@@ -35,6 +35,7 @@ async def get_all_songs(db: Session = Depends(get_db)):
     return result
 
 
+# create new song, add it to song list
 @router.post("/song/")
 async def create_song(audioFile: UploadFile = File(...), db: Session = Depends(get_db)):
     print("Get file...", audioFile.filename)
@@ -59,4 +60,23 @@ async def create_song(audioFile: UploadFile = File(...), db: Session = Depends(g
         "id": str(db_song.id),
         "title": db_song.title,
         "message": "File uploaded successfully",
+    }
+
+
+# delete song from song list
+@router.delete("/song/{song_id}")
+async def delete_song(song_id: str, db: Session = Depends(get_db)):
+    print("Deleting song...", song_id)
+    db_song = db.query(Song).filter(Song.id == song_id).first()
+    if not db_song:
+        raise HTTPException(status_code=404, detail="Song not found")
+
+    db.delete(db_song)
+    db.commit()
+
+    print("deleted song:", db_song.title)
+    return {
+        "id": str(db_song.id),
+        "title": db_song.title,
+        "message": "Song deleted successfully",
     }
