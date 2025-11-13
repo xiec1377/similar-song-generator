@@ -5,6 +5,7 @@ from app.db.database import get_db
 from app.models.song import Song  # ✅ import the actual model class, not the module
 import shutil
 import os
+from app.utils.get_snippet import get_snippet
 
 router = APIRouter()
 
@@ -22,7 +23,9 @@ async def get_all_songs(db: Session = Depends(get_db)):
             {
                 "id": str(song.id),
                 "title": song.title,
-                "file_data": base64.b64encode(song.file_data).decode("utf-8"),
+                "file_data": get_snippet(
+                    song.file_data, duration_ms=10000
+                ),  # base64.b64encode(song.file_data).decode("utf-8"),
                 "created_at": song.created_at.isoformat(),
                 "updated_at": song.updated_at.isoformat(),
             }
@@ -37,7 +40,7 @@ async def create_song(audioFile: UploadFile = File(...), db: Session = Depends(g
     print("Get file...", audioFile.filename)
     file_bytes = await audioFile.read()
 
-    # Optionally, also save the file to disk
+    # save file to directory
     file_path = os.path.join(UPLOAD_DIR, audioFile.filename)
     with open(file_path, "wb") as buffer:
         buffer.write(file_bytes)

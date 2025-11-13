@@ -12,7 +12,6 @@ app.include_router(song.router)
 # Configure CORS
 origins = [
     "http://localhost:5173",
-    # "https://your-frontend-domain.com"
 ]
 
 app.add_middleware(
