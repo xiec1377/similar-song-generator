@@ -9,7 +9,6 @@ function App() {
     <SongProvider>
       <div className="flex flex-col">
         <SongView />
-        <AudioUpload />
         <SongList />
       </div>
     </SongProvider>

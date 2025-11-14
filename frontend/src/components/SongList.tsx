@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { useSong } from "../context/SongContext";
+import AudioUpload from "./AudioUpload";
 
 export default function SongList() {
   const [songs, setSongs] = useState([]);
@@ -62,7 +63,11 @@ export default function SongList() {
 
   return (
     <div className="flex flex-col">
-      <h1 className="m-4">Songs</h1>
+      <div className="flex flex-row justify-between items-center">
+        <AudioUpload songs={songs} onChange={setSongs} />
+        <h2 className="m-4 text-3xl">Library</h2>
+        <span></span>
+      </div>
       {songs &&
         songs.map((song) => {
           // const audioSrc = `data:audio/mpeg;base64,${song.file_data}`;

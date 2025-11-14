@@ -294,12 +294,12 @@ export default function AudioPlayback({ song }) {
               min="0"
               max="2"
               step="0.05"
-              defaultValue={0}
+              defaultValue={1}
               onChange={handleVolume}
               className="rotate-[-90deg] accent-green-600"
             />
           </div>
-          <span className="text-sm font-medium mt-2">Speed</span>
+          <span className="text-sm font-medium mt-2">Volume</span>
         </div>
       </div>
     </div>
