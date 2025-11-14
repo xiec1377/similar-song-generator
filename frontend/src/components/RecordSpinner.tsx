@@ -1,58 +1,93 @@
-import React, { useState, useRef } from "react";
-import { useSong } from "../context/SongContext";
-import "../App.css";
+import React, { useEffect, useState, useRef } from "react";
+import * as Tone from "tone";
 import { AudioPlayer } from "react-wave-audio-player";
+
 
 export default function RecordSpinner({ song }) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioRef = useRef(null);
-  console.log("song in record spinner", song);
+  const [player, setPlayer] = useState<Tone.Player | null>(null);
+  const [pitchShift, setPitchShift] = useState(0);
+  const [pitchNode, setPitchNode] = useState<Tone.PitchShift | null>(null);
 
-  const handlePlayPause = () => {
-    if (!audioRef.current) return;
+  const audioRef = useRef<HTMLAudioElement | null>(null); // to sync AudioPlayer UI
+
+  // Initialize Tone.Player + PitchShift
+  useEffect(() => {
+    if (!song) return;
+
+    const p = new Tone.Player({
+      url: `data:audio/mp3;base64,${song.file_data}`,
+      autostart: false,
+      loop: false,
+    });
+
+    const pitch = new Tone.PitchShift(pitchShift).toDestination();
+    p.connect(pitch);
+
+    setPlayer(p);
+    setPitchNode(pitch);
+
+    return () => {
+      p.dispose();
+      pitch.dispose();
+    };
+  }, [song]);
+
+  useEffect(() => {
+    if (pitchNode) pitchNode.pitch = pitchShift;
+  }, [pitchShift, pitchNode]);
+
+  const handlePlayPause = async () => {
+    if (!player) return;
+    await Tone.start();
 
     if (isPlaying) {
-      audioRef.current.pause();
+      player.stop();
+      setIsPlaying(false);
     } else {
-      audioRef.current.play();
+      player.start();
+      setIsPlaying(true);
     }
-    setIsPlaying(!isPlaying);
+  };
+
+  // Optional: keep AudioPlayer visual in sync
+  const handleTimeUpdate = () => {
+    if (!audioRef.current || !player) return;
+    audioRef.current.currentTime = player.toSeconds();
   };
 
   return (
     <div className="flex flex-col items-center mt-8">
-      {song && <AudioPlayer src={`data:audio/mp3;base64,${song.file_data}`} />}
-      <div
-        className={`w-40 h-40 rounded-full border-8 border-gray-700 bg-center bg-cover 
-          ${isPlaying ? "animate-slow-spin" : ""}`}
-        style={{
-          backgroundImage:
-            "url('https://upload.wikimedia.org/wikipedia/commons/3/35/Vinyl_record_LP_10inch_transparent.png')",
-        }}
-      />
+      {song && (
+        <AudioPlayer
+          src={`data:audio/mp3;base64,${song.file_data}`}
+          ref={audioRef} // sync with Tone.Player if needed
+          waveColor="#a3aed0"
+          progressColor="#3311db"
+          cursorColor="blue"
+          // buttonsColor="#ff5722"
+          barWidth={3}
+          barRadius={2}
+          barGap={1}
+          height={80}
+          playbackSpeeds={[0.5, 1, 1.5, 2]}
+          onPlay={handlePlayPause}
+          onPause={handlePlayPause}
+          onVolumeChange={(vol) => console.log("Volume: ", vol)}
+        />
+      )}
 
-      {/* <button type="button" className="bg-indigo-500" disabled>
-        <svg
-          className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            className="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          ></circle>
-          <path
-            className="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-          ></path>
-        </svg>
-      </button> */}
+      <label className="mt-4">
+        Pitch Shift (semitones):
+        <input
+          type="range"
+          min={-12}
+          max={12}
+          value={pitchShift}
+          onChange={(e) => setPitchShift(parseFloat(e.target.value))}
+          className="ml-2"
+        />
+      </label>
 
       <button
         onClick={handlePlayPause}
@@ -60,13 +95,6 @@ export default function RecordSpinner({ song }) {
       >
         {isPlaying ? "Pause" : "Play"}
       </button>
-      {song && (
-        <audio
-          ref={audioRef}
-          src={`data:audio/mp3;base64,${song.file_data}`} // improve later, large files can take a while
-          type="audio/mpeg"
-        />
-      )}
     </div>
   );
 }

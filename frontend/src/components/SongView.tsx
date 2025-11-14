@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import RecordSpinner from "./RecordSpinner";
 import { useSong } from "../context/SongContext";
 import SongStatsChart from "./SongStatsChart";
+import AudioPlayback from "./AudioPlayback";
 
 export default function SongView() {
   const { selectedSong } = useSong();
@@ -65,7 +66,8 @@ export default function SongView() {
   }, [song]);
   return (
     <div className="flex flex-col">
-      <RecordSpinner song={song} />
+      {/* <RecordSpinner song={song} /> */}
+      {song && <AudioPlayback song={song} />}
       {song && <div>{song.title}</div>}
       {song && <SongStatsChart features={songFeatures} />}
     </div>
