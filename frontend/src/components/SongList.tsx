@@ -71,7 +71,7 @@ export default function SongList() {
               key={song.id}
               className="flex items-center justify-between pt-2 pb-2 px-2"
               onClick={() => {
-                setSelectedSong(song);
+                setSelectedSong(song.id); // seet to just song?
                 console.log("selecting song...", song.title);
               }}
             >

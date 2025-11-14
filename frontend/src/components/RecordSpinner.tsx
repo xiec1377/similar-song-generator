@@ -1,12 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useSong } from "../context/SongContext";
 import "../App.css";
+import { AudioPlayer } from "react-wave-audio-player";
 
-export default function RecordSpinner() {
+export default function RecordSpinner({ song }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
-  const { selectedSong } = useSong();
-  console.log("selectedsong", selectedSong);
+  console.log("song in record spinner", song);
 
   const handlePlayPause = () => {
     if (!audioRef.current) return;
@@ -21,6 +21,7 @@ export default function RecordSpinner() {
 
   return (
     <div className="flex flex-col items-center mt-8">
+      {song && <AudioPlayer src={`data:audio/mp3;base64,${song.file_data}`} />}
       <div
         className={`w-40 h-40 rounded-full border-8 border-gray-700 bg-center bg-cover 
           ${isPlaying ? "animate-slow-spin" : ""}`}
@@ -59,10 +60,10 @@ export default function RecordSpinner() {
       >
         {isPlaying ? "Pause" : "Play"}
       </button>
-      {selectedSong && (
+      {song && (
         <audio
           ref={audioRef}
-          src={`data:audio/mp3;base64,${selectedSong.file_data}`} // improve later, large files can take a while
+          src={`data:audio/mp3;base64,${song.file_data}`} // improve later, large files can take a while
           type="audio/mpeg"
         />
       )}
